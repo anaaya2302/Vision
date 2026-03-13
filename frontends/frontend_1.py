@@ -59,8 +59,8 @@ def plot(image, edge_probs, edge_angles):
         - N/A [plots image beside it's edge probabilities and angles using HSV color code]
     """
 
-    edge_angles = edge_angles[0, :, :, 0]   # (H, W)
-    edge_probs  = edge_probs[0, :, :, 0]    # (H, W)
+    edge_angles = edge_angles[0, 0, :, :]   # (H, W)
+    edge_probs  = edge_probs[0, 0, :, :]    # (H, W)
 
     hue = (edge_angles + np.pi) / (2 * np.pi)
 
