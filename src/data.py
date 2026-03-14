@@ -22,68 +22,72 @@ class DataLoader:
 
 class Preprocessor:
     
-     
+     def get_edge_templates(device): 
 
-     EDGE_TEMPLATES = torch.zeros(9, 1, 3, 3)
+        templates = torch.zeros(9, 1, 3, 3)
 
-     # 1. Diagonal left-to-right (top-left to bottom-right)
-     EDGE_TEMPLATES[0, 0] = torch.tensor([
-            [1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 1]
-        ], dtype=torch.float32)
+        # 1. Diagonal left-to-right (top-left to bottom-right)
+        templates[0, 0] = torch.tensor([
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            ], dtype=torch.float32)
 
-     # 2. Diagonal right-to-left (top-right to bottom-left)
-     EDGE_TEMPLATES[1, 0] = torch.tensor([
-            [0, 0, 1],
-            [0, 1, 0],
-            [1, 0, 0]
-        ], dtype=torch.float32)
+        # 2. Diagonal right-to-left (top-right to bottom-left)
+        templates[1, 0] = torch.tensor([
+                [0, 0, 1],
+                [0, 1, 0],
+                [1, 0, 0]
+            ], dtype=torch.float32)
 
-     # 3. Upper row (horizontal, top)
-     EDGE_TEMPLATES[2, 0] = torch.tensor([
-            [1, 1, 1],
-            [0, 0, 0],
-            [0, 0, 0]
-        ], dtype=torch.float32)
+        # 3. Upper row (horizontal, top)
+        templates[2, 0] = torch.tensor([
+                [1, 1, 1],
+                [0, 0, 0],
+                [0, 0, 0]
+            ], dtype=torch.float32)
 
-     # 4. Middle row (horizontal, middle)
-     EDGE_TEMPLATES[3, 0] = torch.tensor([
-            [0, 0, 0],
-            [1, 1, 1],
-            [0, 0, 0]
-        ], dtype=torch.float32)
+        # 4. Middle row (horizontal, middle)
+        templates[3, 0] = torch.tensor([
+                [0, 0, 0],
+                [1, 1, 1],
+                [0, 0, 0]
+            ], dtype=torch.float32)
 
-     # 5. Lower row (horizontal, bottom)
-     EDGE_TEMPLATES[4, 0] = torch.tensor([
-            [0, 0, 0],
-            [0, 0, 0],
-            [1, 1, 1]
-        ], dtype=torch.float32)
+        # 5. Lower row (horizontal, bottom)
+        templates[4, 0] = torch.tensor([
+                [0, 0, 0],
+                [0, 0, 0],
+                [1, 1, 1]
+            ], dtype=torch.float32)
 
-     # 6. Left column (vertical, left)
-     EDGE_TEMPLATES[5, 0] = torch.tensor([
-            [1, 0, 0],
-            [1, 0, 0],
-            [1, 0, 0]
-        ], dtype=torch.float32)
+        # 6. Left column (vertical, left)
+        templates[5, 0] = torch.tensor([
+                [1, 0, 0],
+                [1, 0, 0],
+                [1, 0, 0]
+            ], dtype=torch.float32)
 
-     # 7. Middle column (vertical, center)
-     EDGE_TEMPLATES[6, 0] = torch.tensor([
-            [0, 1, 0],
-            [0, 1, 0],
-            [0, 1, 0]
-        ], dtype=torch.float32)
+        # 7. Middle column (vertical, center)
+        templates[6, 0] = torch.tensor([
+                [0, 1, 0],
+                [0, 1, 0],
+                [0, 1, 0]
+            ], dtype=torch.float32)
 
-     # 8. Right column (vertical, right)
-     EDGE_TEMPLATES[7, 0] = torch.tensor([
-            [0, 0, 1],
-            [0, 0, 1],
-            [0, 0, 1]
-        ], dtype=torch.float32)
+        # 8. Right column (vertical, right)
+        templates[7, 0] = torch.tensor([
+                [0, 0, 1],
+                [0, 0, 1],
+                [0, 0, 1]
+            ], dtype=torch.float32)
 
-     # 9. No edge
-     EDGE_TEMPLATES[8, 0] = torch.zeros(3, 3, dtype=torch.float32)
+        # 9. No edge
+        templates[8, 0] = torch.zeros(3, 3, dtype=torch.float32)
+
+        templates = templates.to(device)
+
+        return templates
             
      def luminance(
         X, 
@@ -181,7 +185,7 @@ class Preprocessor:
 
          return G_x, G_y
 
-     def edge_probs(G_x, G_y, alpha=10.0, r=0.2):
+     def edge_probs(G_x, G_y, alpha=10.0, r=0.4):
      # I should probably keep alpha and r as learnable
      # But out of sheer laziness, they're hyperparams for now
         """
@@ -194,8 +198,8 @@ class Preprocessor:
             - G_Y: Shape N, H, W [gradient at each pixel along y axis, vertical edge]  
 
         Outputs:
-            - edge_mag: Edge gradient vector at each pixel [Tensor of shape N, H, W, 1]
-            - edge_prob: Probability of there being an edge at that pixel [Tensor of shape N, H, W, 1]
+            - edge_mag: Edge gradient vector at each pixel [Tensor of shape N, 1,H, W,]
+            - edge_prob: Probability of there being an edge at that pixel [Tensor of shape N, 1, H, W]
         """
 
         assert G_x.device == G_y.device, "horizontal and vertical gradients are on different devices"
@@ -229,8 +233,9 @@ class Preprocessor:
 
         return edge_angles
 
-     def template_match(X, edge_templates):
-         scores = F.conv2d(X, edge_templates)
+     def template_match(X, edge_templates, no_edge_bias=0.01):
+         scores = F.conv2d(X, edge_templates, padding=0, stride=3)
+         scores[:,8,:,:] += no_edge_bias
          best_match = torch.argmax(scores, dim=1, keepdim=True)
          return best_match
           
