@@ -95,7 +95,9 @@ def grid_search(image, device):
         recon_prob   = reconstruct(best_match_prob, edge_templates)
         recon_binary = reconstruct(best_match_binary, edge_templates)
 
-        fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+        h, w = image.cpu().numpy().shape[:2]
+        fig, axes = plt.subplots(1, 3, figsize=(w*3/100, h/100))
+
         fig.suptitle(f"alpha={alpha}  r={r}  threshold={threshold}", fontsize=13)
 
         axes[0].imshow(image.cpu().numpy())
@@ -112,7 +114,7 @@ def grid_search(image, device):
 
         plt.tight_layout()
         fname = f"grid_search/a{alpha}_r{r}_t{threshold}.png"
-        plt.savefig(fname, dpi=80)
+        plt.savefig(fname)
         plt.close()
         print(f"saved {fname}")
         

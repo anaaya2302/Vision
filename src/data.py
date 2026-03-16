@@ -185,7 +185,7 @@ class Preprocessor:
 
          return G_x, G_y
 
-     def edge_probs(G_x, G_y, alpha=10.0, r=0.4):
+     def edge_probs(G_x, G_y, alpha=20.0, r=0.4):
      # I should probably keep alpha and r as learnable
      # But out of sheer laziness, they're hyperparams for now
         """
