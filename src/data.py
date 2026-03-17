@@ -23,7 +23,15 @@ class DataLoader:
 class Preprocessor:
     
      def get_edge_templates(device): 
+        """
+        Hardcode the 9 discrete edge templates used for convolution and matching.
 
+        Inputs:
+            - device: torch device to load templates onto
+
+        Output:
+            - templates: 9 edge templates of shape 9, 1, 3, 3 [torch tensor]
+        """
         templates = torch.zeros(9, 1, 3, 3)
 
         # 1. Diagonal left-to-right (top-left to bottom-right)
@@ -234,8 +242,19 @@ class Preprocessor:
         return edge_angles
 
      def template_match(X, edge_templates, no_edge_bias=0.01):
-         scores = F.conv2d(X, edge_templates, padding=0, stride=3)
-         scores[:,8,:,:] += no_edge_bias
-         best_match = torch.argmax(scores, dim=1, keepdim=True)
-         return best_match
+        """
+        Convolve edge templates across image and assign each 3x3 patch its best matching edge label.
+
+        Inputs:
+            - X: Binarised grayscale tensor of shape N, 1, H, W [torch tensor]
+                - edge_templates: 9 edge templates of shape 9, 1, 3, 3 [torch tensor]
+        - no_edge_bias: Small bias added to no-edge filter score to break ties in flat regions
+
+        Output:
+            - best_match: Edge label indices of shape N, 1, H/3, W/3 [torch tensor]
+        """
+        scores = F.conv2d(X, edge_templates, padding=0, stride=3)
+        scores[:,8,:,:] += no_edge_bias
+        best_match = torch.argmax(scores, dim=1, keepdim=True)
+        return best_match
           
