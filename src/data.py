@@ -1,24 +1,6 @@
-import numpy as np 
 import torch as torch
 import torch.nn.functional as F
-from torchvision.datasets import CIFAR10
 
-
-class DataLoader:
-    
-
-
-    def load_cifar10(train=True):
-        dataset = CIFAR10(
-            root="../datasets",
-            train=train,
-            download=True
-    )
-
-        X = np.stack([np.array(img) for img, _ in dataset])
-        y = np.array([label for _, label in dataset])
-
-        return X, y
 
 class Preprocessor:
     
@@ -194,8 +176,7 @@ class Preprocessor:
          return G_x, G_y
 
      def edge_probs(G_x, G_y, alpha=20.0, r=0.4):
-     # I should probably keep alpha and r as learnable
-     # But out of sheer laziness, they're hyperparams for now
+
         """
         Using edge gradients, calculate probability of edge using vector sum of gradients along both directions
 
