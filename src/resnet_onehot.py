@@ -29,17 +29,16 @@ class OneHotResNet(nn.Module):
 
     def forward(self, X):
         # X is my cached preprocessed input 
-        # By my arithemetic, it should be [N, 1, 149, 149]
+        # By my arithemetic, it should be [N, 149, 149]
 
-        if X.dim() == 4:
-            X = X.squeeze(1)
-        
+
+
         X = self.embedding(X.long()) # Turn indices into 64-dim vectors
         X = X.permute(0, 3, 1, 2)
         
         # These floats and bytes are literally waiting to throw an error I swear
 
-
+        X = X.float()
         
         # Yeet into ResNet
         X = self.resnet(X)
@@ -50,12 +49,19 @@ class OneHotResNet(nn.Module):
 def main():
     device = torch.device("cuda")
 
-    train_ds = SymbolicDataset(root_dir="datasets/symbolic_cache/train")
-    val_ds = SymbolicDataset(root_dir="datasets/symbolic_cache/val")
+    train_ds = SymbolicDataset(
+        tensor_path="datasets/symbolic_cache/processed_data.pt", 
+        labels_path="datasets/symbolic_cache/labels.pt"
+    )
 
-    train_loader = DataLoader(train_ds, batch_size=32, shuffle=True, num_workers=0, pin_memory=True)
-    val_loader = DataLoader(val_ds, batch_size=32, shuffle=False, num_workers=0, pin_memory=True)
+    val_ds = SymbolicDataset(
+        tensor_path="datasets/symbolic_cache/processed_data.pt", 
+        labels_path="datasets/symbolic_cache/labels.pt"
+    )
 
+
+    train_loader = DataLoader(train_ds, batch_size=64, shuffle=True, num_workers=0, pin_memory=True)
+    val_loader = DataLoader(val_ds, batch_size=64, shuffle=False, num_workers=0, pin_memory=True)
     model = OneHotResNet(num_classes=10).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     criterion = nn.CrossEntropyLoss()
