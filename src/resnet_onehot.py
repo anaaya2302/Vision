@@ -18,11 +18,10 @@ class OneHotResNet(nn.Module):
         
         # All hail torch code that I barely understand
         self.resnet = models.resnet18(weights=None)
-        
+        self.resnet.conv1 = nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1, bias=False)
+        self.resnet.bn1 = nn.BatchNorm2d(64)
         # Can't use standard stem... the downsampling would nuke my preprocessor
-        self.resnet.conv1 = nn.Identity()
-        self.resnet.bn1 = nn.Identity()
-        self.resnet.relu = nn.Identity()
+
         self.resnet.maxpool = nn.Identity()
         
         self.resnet.fc = nn.Linear(512, num_classes)
