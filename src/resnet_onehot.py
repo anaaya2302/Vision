@@ -1,0 +1,93 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.utils.data import DataLoader
+from torchvision import models
+from datasets.cache_loader import SymbolicDataset
+from tqdm import tqdm
+
+
+
+
+
+class OneHotResNet(nn.Module):
+    def __init__(self, num_classes=10):
+        super().__init__()
+        
+        self.embedding = nn.Embedding(9, 64)
+        
+        # All hail torch code that I barely understand
+        self.resnet = models.resnet18(weights=None)
+        
+        # Can't use standard stem... the downsampling would nuke my preprocessor
+        self.resnet.conv1 = nn.Identity()
+        self.resnet.bn1 = nn.Identity()
+        self.resnet.relu = nn.Identity()
+        self.resnet.maxpool = nn.Identity()
+        
+        self.resnet.fc = nn.Linear(512, num_classes)
+
+    def forward(self, X):
+        # X is my cached preprocessed input 
+        # By my arithemetic, it should be [N, 1, 149, 149]
+
+        if X.dim() == 4:
+            X = X.squeeze(1)
+        
+        X = self.embedding(X.long()) # Turn indices into 64-dim vectors
+        X = X.permute(0, 3, 1, 2)
+        
+        # These floats and bytes are literally waiting to throw an error I swear
+
+
+        
+        # Yeet into ResNet
+        X = self.resnet(X)
+        return X
+    
+
+
+def main():
+    device = torch.device("cuda")
+
+    train_ds = SymbolicDataset(root_dir="datasets/symbolic_cache/train")
+    val_ds = SymbolicDataset(root_dir="datasets/symbolic_cache/val")
+
+    train_loader = DataLoader(train_ds, batch_size=32, shuffle=True, num_workers=0, pin_memory=True)
+    val_loader = DataLoader(val_ds, batch_size=32, shuffle=False, num_workers=0, pin_memory=True)
+
+    model = OneHotResNet(num_classes=10).to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    criterion = nn.CrossEntropyLoss()
+
+    for epoch in range(5):
+        # Training
+        model.train()
+        train_loss, correct, total = 0, 0, 0
+        for X, y in tqdm(train_loader, desc=f"Epoch {epoch+1} train"):
+            X, y = X.to(device), y.to(device)
+            optimizer.zero_grad()
+            out = model(X)
+            loss = criterion(out, y)
+            loss.backward()
+            optimizer.step()
+            train_loss += loss.item()
+            correct += (out.argmax(1) == y).sum().item()
+            total += y.size(0)
+        print(f"Train loss: {train_loss/len(train_loader):.4f} | Acc: {correct/total:.4f}")
+
+        # Validation
+        model.eval()
+        val_loss, correct, total = 0, 0, 0
+        with torch.no_grad():
+            for X, y in tqdm(val_loader, desc=f"Epoch {epoch+1} val"):
+                X, y = X.to(device), y.to(device)
+                out = model(X)
+                loss = criterion(out, y)
+                val_loss += loss.item()
+                correct += (out.argmax(1) == y).sum().item()
+                total += y.size(0)
+        print(f"Val loss:   {val_loss/len(val_loader):.4f} | Acc: {correct/total:.4f}")
+
+if __name__ == "__main__":
+    main()
