@@ -50,13 +50,13 @@ def main():
     device = torch.device("cuda")
 
     train_ds = SymbolicDataset(
-        tensor_path="datasets/symbolic_cache/processed_data.pt", 
-        labels_path="datasets/symbolic_cache/labels.pt"
+        tensor_path="datasets/symbolic_cache/train/train.pt", 
+        labels_path="datasets/symbolic_cache/train/train_labels.pt"
     )
 
     val_ds = SymbolicDataset(
-        tensor_path="datasets/symbolic_cache/processed_data.pt", 
-        labels_path="datasets/symbolic_cache/labels.pt"
+        tensor_path="datasets/symbolic_cache/val/val.pt", 
+        labels_path="datasets/symbolic_cache/val/val_labels.pt"
     )
 
 
@@ -66,7 +66,7 @@ def main():
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     criterion = nn.CrossEntropyLoss()
 
-    for epoch in range(5):
+    for epoch in range(20):
         # Training
         model.train()
         train_loss, correct, total = 0, 0, 0

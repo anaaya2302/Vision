@@ -5,4 +5,6 @@ __pycache__/
 .DS_Store
 checkpoints/
 *.egg-info/
-datasets/  
+datasets/imagenette2/
+datasets/symbolic_cache/
+
