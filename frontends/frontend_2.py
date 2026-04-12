@@ -6,6 +6,7 @@ from PIL import Image
 import torch as torch
 
 
+
 def properties(image):
    
     image =  image.unsqueeze(0) #1, H, W, 3
@@ -55,7 +56,7 @@ def plot(image, best_match_binary, edge_templates):
     axes[1].axis("off")
 
     plt.tight_layout()
-    plt.savefig("assets/reconstruction.png", dpi=150, bbox_inches='tight')
+    plt.savefig(f"assets/reconstruction_{image}.png", dpi=150, bbox_inches='tight')
     plt.show()
 
 
@@ -75,7 +76,7 @@ def main():
     image = image.to(device)
     edge_templates = Preprocessor.get_edge_templates(device)
     edge_probs, edge_binary = properties(image)
-    best_probs = prob_map(edge_probs, edge_templates)
+ 
     best_binaries = binary_map(edge_binary, edge_templates)
     
 

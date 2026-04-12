@@ -1,31 +1,31 @@
 #Had AI code it. I have zero clue what's happening tbh.
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 import os
 
 class SymbolicDataset(Dataset):
     def __init__(self, tensor_path, labels_path=None):
-        print(f"Loading consolidated tensor from {tensor_path}...")
-        # Use mmap=True to keep RAM usage low on your laptop
+        # mmap=True is crucial for laptops: it keeps the file on disk and 
+        # only loads the specific 'idx' into RAM when requested.
         self.data = torch.load(tensor_path, weights_only=True, mmap=True)
         
         if labels_path and os.path.exists(labels_path):
             self.labels = torch.load(labels_path, weights_only=True)
         else:
-            print("WARNING: No labels found. Using dummy zeros.")
             self.labels = torch.zeros(self.data.shape[0], dtype=torch.long)
 
     def __len__(self):
         return self.data.shape[0]
 
     def __getitem__(self, idx):
-        # 1. Grab the slice
-        index_map = self.data[idx].long()
+        # 1. Grab the trig features. 
+        # If cached as (N, 2, 149, 149), self.data[idx] is (2, 149, 149)
+        x = self.data[idx]
         
-        # 2. THE FIX: Squeeze out ALL extra dimensions of size 1
-        # This turns [1, 1, 149, 149] or [1, 149, 149] into just [149, 149]
-        index_map = index_map.squeeze()
+        # 2. Grab the label
+        y = self.labels[idx]
         
-        label = self.labels[idx]
-        
-        return index_map, label
+        return x, y
+
+
+    

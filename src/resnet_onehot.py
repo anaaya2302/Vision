@@ -7,13 +7,13 @@ from datasets.cache_loader import SymbolicDataset
 from tqdm import tqdm
 
 
-
+#RESNETS WERE WAY TOO BIG. no matter what i did it overfit like crazy.
 
 
 class OneHotResNet(nn.Module):
     def __init__(self, num_classes=10):
         super().__init__()
-        
+        #Add dropout, scheduler, 
         self.embedding = nn.Embedding(9, 64)
         
         # All hail torch code that I barely understand
@@ -49,20 +49,20 @@ def main():
     device = torch.device("cuda")
 
     train_ds = SymbolicDataset(
-        tensor_path="datasets/symbolic_cache/train/train.pt", 
+        tensor_path="datasets/symbolic_cache/train/processed_data.pt", 
         labels_path="datasets/symbolic_cache/train/train_labels.pt"
     )
 
     val_ds = SymbolicDataset(
-        tensor_path="datasets/symbolic_cache/val/val.pt", 
+        tensor_path="datasets/symbolic_cache/val/processed_data.ptS", 
         labels_path="datasets/symbolic_cache/val/val_labels.pt"
     )
 
 
-    train_loader = DataLoader(train_ds, batch_size=64, shuffle=True, num_workers=0, pin_memory=True)
-    val_loader = DataLoader(val_ds, batch_size=64, shuffle=False, num_workers=0, pin_memory=True)
+    train_loader = DataLoader(train_ds, batch_size=64, shuffle=True, num_workers=4, pin_memory=True)
+    val_loader = DataLoader(val_ds, batch_size=64, shuffle=False, num_workers=4, pin_memory=True)
     model = OneHotResNet(num_classes=10).to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
     criterion = nn.CrossEntropyLoss()
 
     for epoch in range(20):

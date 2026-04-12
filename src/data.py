@@ -1,5 +1,6 @@
 import torch as torch
 import torch.nn.functional as F
+import numpy as np
 
 
 class Preprocessor:
@@ -82,7 +83,7 @@ class Preprocessor:
      def luminance(
         X, 
         luminance = (0.299, 0.587, 0.114),
-        normalised=True,
+        normalise=True,
         channels_last = True
     ):
         """
@@ -110,7 +111,7 @@ class Preprocessor:
         
         X = torch.sum(X * luminance, dim=1, keepdim=True)
  
-        if normalised:
+        if normalise:
            X = X.float()/ 255.0
 
         return X
@@ -187,7 +188,7 @@ class Preprocessor:
             - G_Y: Shape N, H, W [gradient at each pixel along y axis, vertical edge]  
 
         Outputs:
-            - edge_mag: Edge gradient vector at each pixel [Tensor of shape N, 1,H, W,]
+            - edge_mag: Edge gradient vector at each pixel [Tensor of shape N, 1, H, W,]
             - edge_prob: Probability of there being an edge at that pixel [Tensor of shape N, 1, H, W]
         """
 
@@ -239,3 +240,27 @@ class Preprocessor:
         best_match = torch.argmax(scores, dim=1, keepdim=True)
         return best_match
           
+     def get_angle_mapping(device):
+         angle_mapping = [[-0.707, -0.707],
+                            [0.707, 0.707],
+                           [0.995,0.105],
+                           [1,0],
+                           [0.995,-0.105],
+                           [-0.105, 0.995],
+                           [0,1],
+                           [0.105, 0.995],
+                           [0,0]]
+         
+         angle_map = torch.tensor(angle_mapping, dtype=torch.float32).to(device)
+         return angle_map
+     
+     def idx_to_trig(edge_indexes, angle_mapping):
+         
+         """input dim: [N, 1, H, W]
+         output dim: [N, 2, H, w]
+         """
+         features = angle_mapping[edge_indexes.long().squeeze(1)]
+         features = features.permute(0, 3, 1, 2)
+         features = features.float()
+         return features
+         

@@ -13,7 +13,7 @@ def cache_split(split, device):
     os.makedirs(cache_dir, exist_ok=True)
 
     if not os.path.exists(split_dir):
-        sys.exit(f"Error: {split_dir} not found. Check your folder structure!")
+        sys.exit(f"Error: {split_dir} not found.")
 
     batch_size = 64
     transform = transforms.Compose([
@@ -22,55 +22,49 @@ def cache_split(split, device):
     ])
 
     dataset = datasets.ImageFolder(root=split_dir, transform=transform)
-    loader = DataLoader(dataset, batch_size=batch_size, num_workers=0, shuffle=False)
+    loader = DataLoader(dataset, batch_size=batch_size, num_workers=4, shuffle=False)
 
     edge_templates = Preprocessor.get_edge_templates(device)
+    angle_map = Preprocessor.get_angle_mapping(device)
 
-    print(f"\n[{split}] Starting processing ({len(dataset)} images)...")
+    print(f"\n[{split}] into the trenches we go!")
 
-    # Save labels
+    
     all_labels = []
     for _, labels in tqdm(loader, desc=f"[{split}] Labels"):
-        all_labels.append(labels.cpu())
+        all_labels.append(labels)
     torch.save(torch.cat(all_labels, dim=0), os.path.join(cache_dir, "labels.pt"))
 
-    # Save image order
-    image_paths = [s[0] for s in dataset.samples]
-    with open(os.path.join(cache_dir, "image_order.txt"), "w") as f:
-        for p in image_paths:
-            f.write(f"{os.path.relpath(p, split_dir)}\n")
-
-    # Process and save features
-    all_indices = []
+    # Process and Save Trig Features
+    all_features = []
     with torch.no_grad():
-        for images, _ in tqdm(loader, desc=f"[{split}] Features"):
+        for images, _ in tqdm(loader, desc=f"[{split}] Trig Features"):
             images = images.to(device)
-            images = Preprocessor.luminance(images, channels_last=False, normalised=False)
+            images = Preprocessor.luminance(images, channels_last=False, normalise=False)
             edge_grads = Preprocessor.edge_grads(images)
             _, edge_probs = Preprocessor.edge_probs(*edge_grads)
             edge_binary = Preprocessor.thresholding_grayscale(edge_probs).float()
-            print(edge_binary.device, edge_templates.device)
-            best_match = Preprocessor.template_match(edge_binary, edge_templates)
-            all_indices.append(best_match.detach().cpu().byte())
+            
+            # Get discrete index (0-8)
+            best_match = Preprocessor.template_match(edge_binary, edge_templates) 
+            
 
-    print(f"[{split}] Consolidating...")
-    final_tensor = torch.cat(all_indices, dim=0)
-    tensor_save_path = os.path.join(cache_dir, "processed_data.pt")
-    torch.save(final_tensor, tensor_save_path)
+            
+            # Pull (sin, cos) and reshape back to (N, 2, H/3, W/3)
+            trig_features = Preprocessor.idx_to_trig(best_match, angle_map)
+            
+            all_features.append(trig_features.cpu().half())
 
-    final_size_gb = os.path.getsize(tensor_save_path) / (1024**3)
-    print(f"[{split}] Done! {tensor_save_path} ({final_size_gb:.2f} GB)")
-
+    print(f"[{split}] Consolidating tensors...")
+    final_tensor = torch.cat(all_features, dim=0)
+    save_path = os.path.join(cache_dir, "processed_data.pt")
+    torch.save(final_tensor, save_path)
+    print(f"[{split}] Done! Saved to {save_path}")
 
 def main():
-    print("GPU is active:", torch.cuda.is_available())
-    if not torch.cuda.is_available():
-        sys.exit("GPU is throwing a tantrum. Use a machine with CUDA.")
-
-    device = torch.device("cuda")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     for split in ["train", "val"]:
         cache_split(split, device)
-
 
 if __name__ == "__main__":
     main()
