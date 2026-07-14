@@ -6,5 +6,6 @@ __pycache__/
 checkpoints/
 *.egg-info/
 datasets/imagenette2/
-datasets/symbolic_cache/
-
+datasets/symbolic_cache*
+datasets/caltech256_split/
+desktop.ini

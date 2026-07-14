@@ -56,7 +56,7 @@ def plot(image, best_match_binary, edge_templates):
     axes[1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(f"assets/reconstruction_{image}.png", dpi=150, bbox_inches='tight')
+    plt.savefig(f"assets/reconstruction.png", dpi=150, bbox_inches='tight')
     plt.show()
 
 
