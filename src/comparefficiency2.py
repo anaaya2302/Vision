@@ -127,7 +127,7 @@ def run_mini_train(model, train_loader, val_loader, epochs=30, lr=0.001):
 
 
 def save_results_csv(dataset_name,seed, percentages,symbolic_results, raw_results, s_epoch_times, r_epoch_times):
-    assets_dir = os.path.join("assets")
+    assets_dir = os.path.join("assets", "results")
     os.makedirs(assets_dir, exist_ok=True)
     seed = str(seed)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

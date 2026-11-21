@@ -31,7 +31,9 @@ what neuroscience already tells us the brain does, edge labelling. This pipeline
 leaving the downstream model free to learn higher-level structure.
 
 ## Folder Structure
-- `assets/` — demo images
+- `assets/images/` — demo images
+- `assets/results/` — experiment results (CSVs, spreadsheets, plots)
+- `assets/visual reconstructions/` — edge-map reconstruction outputs
 - `src/data.py` — Core `Preprocessor` class: luminance, Sobel gradients, 
    edge probability, binarisation, template matching
 - `frontends/frontend_1.py` — Visualise edge probabilities and angles 
@@ -87,7 +89,7 @@ Results saved to `grid_search/` with filenames encoding parameter values.
 With parameters `r=0.4, threshold=0.5`, the discrete edge map preserves 
 sufficient structure for human recognition from reconstruction alone.
 
-![Results](assets/a5.0_r0.4_t0.5.png)
+![Results](assets/visual%20reconstructions/a5.0_r0.4_t0.5.png)
 
 ## Future Work
 

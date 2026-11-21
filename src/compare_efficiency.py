@@ -115,7 +115,8 @@ def main():
     plt.ylabel('Val Accuracy')
     plt.legend()
     plt.grid(True)
-    plt.savefig(f'efficiency_{dataset_name}.png')
+    os.makedirs('assets/results', exist_ok=True)
+    plt.savefig(f'assets/results/efficiency_{dataset_name}.png')
     plt.show()
 
 if __name__ == "__main__":

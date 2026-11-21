@@ -1,9 +1,16 @@
-fastai==2.1.10
-matplotlib==3.10.8
-numpy==2.4.4
-Pillow==12.2.0
-setuptools==80.9.0
-skimage==0.0
-torch==2.5.1
-torchvision==0.20.1
-tqdm==4.67.3
+# Install (from repo root):
+#   uv venv --python 3.12
+#   uv pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
+#   uv pip install -e .
+#
+# torch >= 2.7 is required: RTX 5070 (Blackwell, sm_120) needs CUDA 12.8+ builds.
+# Older torch (<=2.6) installs fine but fails at runtime with "no kernel image available".
+torch>=2.7
+torchvision
+matplotlib
+numpy
+Pillow
+pandas
+scikit-image
+tqdm
+setuptools

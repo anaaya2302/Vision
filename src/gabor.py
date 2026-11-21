@@ -119,8 +119,8 @@ def main():
         "gabor_val_acc": results,
         "avg_epoch_time": times
     })
-    os.makedirs("assets", exist_ok=True)
-    df.to_csv(f"assets/gabor_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv", index=False)
+    os.makedirs("assets/results", exist_ok=True)
+    df.to_csv(f"assets/results/gabor_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv", index=False)
 
 if __name__ == "__main__":
     main()

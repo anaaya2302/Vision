@@ -2,11 +2,11 @@ import os
 import shutil
 from tqdm import tqdm
 
+DATASETS_DIR = os.path.dirname(os.path.abspath(__file__))
+
 def physical_split():
-    # Im sorry for the hardcoded paths
-    # Blame windows' tantrums not me
-    src_dir = "C:/Users/Asus/Desktop/Jupiter's ballroom of Regret/vision_project/datasets/caltech256/256_ObjectCategories" 
-    final_root = "datasets/caltech256_split"
+    src_dir = os.path.join(DATASETS_DIR, "caltech256", "256_ObjectCategories")
+    final_root = os.path.join(DATASETS_DIR, "caltech256_split")
     
     if not os.path.exists(src_dir):
         print(f"Source {src_dir} not found! Check your folder name.")

@@ -1,3 +1,4 @@
+import os
 from src.data import Preprocessor
 import sys
 import numpy as np
@@ -56,7 +57,8 @@ def plot(image, best_match_binary, edge_templates):
     axes[1].axis("off")
 
     plt.tight_layout()
-    plt.savefig(f"assets/reconstruction.png", dpi=150, bbox_inches='tight')
+    os.makedirs("assets/visual reconstructions", exist_ok=True)
+    plt.savefig("assets/visual reconstructions/reconstruction.png", dpi=150, bbox_inches='tight')
     plt.show()
 
 

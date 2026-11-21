@@ -12,27 +12,27 @@ import csv
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 IMAGE_PATHS = [
-    os.path.join(BASE_DIR, "assets", "doggie.jpeg"),
-    os.path.join(BASE_DIR, "assets", "me at the beach.jpeg"),
-    os.path.join(BASE_DIR, "assets", "my red hair.jpeg"),
-    os.path.join(BASE_DIR, "assets", "bird.jpeg"),
-    os.path.join(BASE_DIR, "assets", "book.jpeg"),
-    os.path.join(BASE_DIR, "assets", "charminar.jpeg"),
-    os.path.join(BASE_DIR, "assets", "fire.jpeg"),
-    os.path.join(BASE_DIR, "assets", "flower.jpeg"),
-    os.path.join(BASE_DIR, "assets", "footsteps.jpeg"),
-    os.path.join(BASE_DIR, "assets", "food.jpeg"),
-    os.path.join(BASE_DIR, "assets", "go karting.jpeg"),
-    os.path.join(BASE_DIR, "assets", "ice cream.jpeg"),
-    os.path.join(BASE_DIR, "assets", "palm.jpeg"),
-    os.path.join(BASE_DIR, "assets", "path.jpeg"),
-    os.path.join(BASE_DIR, "assets", "plane wing.jpeg"),
-    os.path.join(BASE_DIR, "assets", "redbull.jpeg"),
-    os.path.join(BASE_DIR, "assets", "spain castle.jpeg"),
-    os.path.join(BASE_DIR, "assets", "statue of liberty.jpeg"),
-    os.path.join(BASE_DIR, "assets", "street in spain.jpeg"),
-    os.path.join(BASE_DIR, "assets", "sunkissed doggie.jpeg"),
-    os.path.join(BASE_DIR, "assets", "times square.jpeg")
+    os.path.join(BASE_DIR, "assets", "images", "doggie.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "me at the beach.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "my red hair.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "bird.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "book.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "charminar.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "fire.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "flower.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "footsteps.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "food.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "go karting.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "ice cream.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "palm.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "path.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "plane wing.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "redbull.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "spain castle.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "statue of liberty.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "street in spain.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "sunkissed doggie.jpeg"),
+    os.path.join(BASE_DIR, "assets", "images", "times square.jpeg")
     
 ]
 
